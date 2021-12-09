@@ -149,14 +149,62 @@ order by st.step_number
   */
 }
 
-function add(scheme) { // EXERCISE D
+ function add(scheme) { 
+  return db('schemes')
+    .insert(scheme)
+    .then(([scheme_id]) => {
+      return db('schemes').where('scheme_id', scheme_id)
+    })
+ 
+
+  
+  // EXERCISE D
   /*
     1D- This function creates a new scheme and resolves to _the newly created scheme_.
-  */
+    
+insert into schemes values(101,'test Name')
+select *
+from schemes  
+  
+    */
+ 
 }
 
-function addStep(scheme_id, step) { // EXERCISE E
+async function addStep(scheme_id, step) { 
+  return db('steps')
+    .insert({
+      ...step,
+      scheme_id
+    })
+    .then(()=> {
+      const rows = db("schemes as sc")
+      .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
+      .select('st.step_id','st.step_number','st.instructions', 'sc.scheme_name')
+      .where('sc.scheme_id', scheme_id)
+      .orderBy('st.step_number')
+  console.log(rows)
+  return rows
+    })
+  
+  
+  
+  
+  // EXERCISE E
+
+  
   /*
+insert into steps values(17, 2, "test instructions", 1);
+select
+    st.step_id,
+    st.step_number,
+    st.instructions,
+    sc.scheme_name
+from schemes as sc
+left join steps as st
+    on sc.scheme_id = st.scheme_id
+where st.scheme_id = 1
+order by st.step_number;
+
     1E- This function adds a step to the scheme with the given `scheme_id`
     and resolves to _all the steps_ belonging to the given `scheme_id`,
     including the newly created one.
